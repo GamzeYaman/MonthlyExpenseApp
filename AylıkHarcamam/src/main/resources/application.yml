@@ -1,0 +1,11 @@
+spring:
+    application:
+        name: monthly_expense_backend
+    datasource:
+        password: bangtan
+        url: jdbc:postgresql://localhost:5432/MonthlyExpense
+        username: postgres
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
