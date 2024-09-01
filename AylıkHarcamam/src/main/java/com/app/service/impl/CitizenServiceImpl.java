@@ -2,6 +2,7 @@ package com.app.service.impl;
 
 import com.app.common.validation.ValidationUtils;
 import com.app.converter.CitizenMapper;
+import com.app.dto.CitizenDto;
 import com.app.dto.CitizenSaveDto;
 import com.app.entity.Citizen;
 import com.app.repository.CitizenRepository;
@@ -22,6 +23,14 @@ public class CitizenServiceImpl implements CitizenService {
         Citizen citizen = CitizenMapper.INSTANCE.convertCitizenFromCitizenSaveDto(citizenSaveDto);
         citizenRepository.save(citizen);
         return "Kişi başarıyla eklenmiştir. Ad Soyad / Kullanıcı Adı : " + citizen.getCitizenName() + " " + citizen.getCitizenSurname() + " / " + citizen.getUsername();
+    }
+
+    @Override
+    public CitizenDto getCitizenById(String citizenId) {
+        return citizenRepository.findById(citizenId)
+                .map(CitizenMapper.INSTANCE::convertCitizenDtoFromCitizen)
+                .orElse(null)
+                ;
     }
 
     private void isUsernameUsed(String username) {
