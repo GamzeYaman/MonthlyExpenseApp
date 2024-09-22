@@ -31,4 +31,9 @@ public class CommonMapper {
         NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("tr"));
         return numberFormat.format(amount);
     }
+
+    @Named("getMonth")
+    public Month getMonth(int month) {
+        return Month.of(month);
+    }
 }
