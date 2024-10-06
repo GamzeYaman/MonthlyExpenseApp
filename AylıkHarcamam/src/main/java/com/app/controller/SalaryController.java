@@ -1,14 +1,14 @@
 package com.app.controller;
 
+import com.app.dto.DetailOfSalaryArrangementDto;
 import com.app.dto.SalarySaveDto;
 import com.app.service.SalaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Month;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,5 +20,10 @@ public class SalaryController {
     @PostMapping
     public ResponseEntity<String> saveSalary(@RequestBody SalarySaveDto salarySaveDto) {
         return new ResponseEntity<>(salaryService.saveSalary(salarySaveDto), HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<DetailOfSalaryArrangementDto> getArrangementOfSalary(@RequestParam String citizenId, @RequestParam Month debtMonth, @RequestParam short debtYear) {
+        return new ResponseEntity<>(salaryService.showArrangementOfSalary(citizenId, debtMonth, debtYear), HttpStatus.OK);
     }
 }

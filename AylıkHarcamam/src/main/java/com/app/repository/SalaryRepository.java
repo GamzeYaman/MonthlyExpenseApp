@@ -8,4 +8,6 @@ import java.time.Month;
 public interface SalaryRepository extends JpaRepository<Salary, Long> {
 
     boolean existsBySalaryMonthAndSalaryYear(Month salaryMonth, int salaryYear);
+
+    Salary findByCitizenId(String citizenId);
 }
