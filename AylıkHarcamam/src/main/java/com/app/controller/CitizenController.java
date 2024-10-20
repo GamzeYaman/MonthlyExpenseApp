@@ -2,6 +2,7 @@ package com.app.controller;
 
 import com.app.dto.CitizenDto;
 import com.app.dto.CitizenSaveDto;
+import com.app.dto.CitizenUpdateDto;
 import com.app.service.CitizenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,11 @@ public class CitizenController {
     @PostMapping("/save")
     public ResponseEntity<String> saveCitizen(@RequestBody CitizenSaveDto citizenSaveDto) {
         return new ResponseEntity<>(citizenService.saveCitizen(citizenSaveDto), HttpStatus.OK);
+    }
+
+    @PutMapping("/{citizenId}")
+    public ResponseEntity<String> updateCitizen(@PathVariable String citizenId,  @RequestBody CitizenUpdateDto citizenUpdateDto) {
+        return new ResponseEntity<>(citizenService.updateCitizen(citizenId, citizenUpdateDto), HttpStatus.OK);
     }
 
     @GetMapping("/getCitizen")

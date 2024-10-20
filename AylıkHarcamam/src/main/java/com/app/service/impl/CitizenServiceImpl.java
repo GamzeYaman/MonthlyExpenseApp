@@ -4,6 +4,7 @@ import com.app.common.validation.ValidationUtils;
 import com.app.converter.CitizenMapper;
 import com.app.dto.CitizenDto;
 import com.app.dto.CitizenSaveDto;
+import com.app.dto.CitizenUpdateDto;
 import com.app.entity.Citizen;
 import com.app.repository.CitizenRepository;
 import com.app.service.CitizenService;
@@ -22,7 +23,17 @@ public class CitizenServiceImpl implements CitizenService {
         isUsernameUsed(citizenSaveDto.getUsername());
         Citizen citizen = CitizenMapper.INSTANCE.convertCitizenFromCitizenSaveDto(citizenSaveDto);
         citizenRepository.save(citizen);
-        return "Kişi başarıyla eklenmiştir. Ad Soyad / Kullanıcı Adı : " + citizen.getCitizenName() + " " + citizen.getCitizenSurname() + " / " + citizen.getUsername();
+        return "Kişi başarıyla eklenmiştir. Ad Soyad / Kullanıcı Adı : " + getSavedCitizenInfo(citizen);
+    }
+
+    @Override
+    public String updateCitizen(String citizenId, CitizenUpdateDto citizenUpdateDto) {
+        validationOfValues(citizenUpdateDto.getCitizenName(), citizenUpdateDto.getCitizenSurname(), citizenUpdateDto.getUsername());
+        isUsernameUsed(citizenUpdateDto.getUsername());
+        Citizen citizen = citizenRepository.findById(citizenId).orElseThrow(() -> { return new RuntimeException("İgili kişi bulunamadı!");});
+        CitizenMapper.INSTANCE.updateCitizenFromDto(citizenUpdateDto, citizen);
+        citizenRepository.save(citizen);
+        return "Kişi başarıyla güncellenmiştir. Ad Soyad / Kullanıcı Adı : " + getSavedCitizenInfo(citizen);
     }
 
     @Override
@@ -41,15 +52,24 @@ public class CitizenServiceImpl implements CitizenService {
     }
 
     private void isDtoValuesNull(CitizenSaveDto citizenSaveDto) {
-        if(ValidationUtils.isValueNull(citizenSaveDto.getCitizenName())) {
-            throw new RuntimeException("Kişi adı boş olamaz!");
-        } else if(ValidationUtils.isValueNull(citizenSaveDto.getCitizenSurname())) {
-            throw new RuntimeException("Kişi soyadı boş olamaz");
-        } else if(ValidationUtils.isValueNull(citizenSaveDto.getUsername())) {
-            throw new RuntimeException("Kişi kullanıcı adı boş olamaz!");
-        } else if(ValidationUtils.isValueNull(citizenSaveDto.getPassword())) {
+        validationOfValues(citizenSaveDto.getCitizenName(), citizenSaveDto.getCitizenSurname(), citizenSaveDto.getUsername());
+         if(ValidationUtils.isValueNull(citizenSaveDto.getPassword())) {
             throw new RuntimeException("Şifre boş olamaz!");
         }
+    }
+
+    private void validationOfValues(String citizenName, String citizenSurname, String username) {
+        if(ValidationUtils.isValueNull(citizenName)) {
+            throw new RuntimeException("Kişi adı boş olamaz!");
+        } else if(ValidationUtils.isValueNull(citizenSurname)) {
+            throw new RuntimeException("Kişi soyadı boş olamaz");
+        } else if(ValidationUtils.isValueNull(username)) {
+            throw new RuntimeException("Kişi kullanıcı adı boş olamaz!");
+        }
+    }
+
+    private String getSavedCitizenInfo(Citizen citizen) {
+        return citizen.getCitizenName() + " " + citizen.getCitizenSurname() + " / " + citizen.getUsername();
     }
 
 }
