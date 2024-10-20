@@ -4,10 +4,7 @@ import com.app.common.mapper.CommonMapper;
 import com.app.dto.DetailOfSalaryArrangementDto;
 import com.app.dto.SalarySaveDto;
 import com.app.entity.Salary;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
@@ -23,6 +20,9 @@ public interface SalaryMapper {
     @Mapping(target = "salaryMonth", source = "salaryMonth", qualifiedByName = "getMonth")
     @Mapping(target = "citizen.id", source = "citizenId")
     Salary convertToSalaryFromSalarySaveDto(SalarySaveDto salarySaveDto);
+
+    @Mapping(target = "salaryMonth", source = "salaryMonth", qualifiedByName = "getMonth")
+    Salary updateSalaryFromDto(SalarySaveDto salarySaveDto, @MappingTarget Salary salary);
 
     @Mappings(value = {
          @Mapping(target = "month", source = "salary.salaryMonth", qualifiedByName = "getMonthName"),

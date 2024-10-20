@@ -9,5 +9,7 @@ public interface SalaryService {
 
     String saveSalary(SalarySaveDto salarySaveDto);
 
+    String updateSalary(Long salaryId, SalarySaveDto salarySaveDto);
+
     DetailOfSalaryArrangementDto showArrangementOfSalary(String citizenId, Month debtMonth, short debtYear);
 }

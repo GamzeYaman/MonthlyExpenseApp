@@ -38,6 +38,16 @@ public class SalaryServiceImpl implements SalaryService {
     }
 
     @Override
+    public String updateSalary(Long salaryId, SalarySaveDto salaryUpdateDto) {
+        isDtoValuesNull(salaryUpdateDto);
+        isThereSalaryInMonthAndYear(Month.of(salaryUpdateDto.getSalaryMonth()), salaryUpdateDto.getSalaryYear());
+        Salary salary = salaryRepository.findById(salaryId).orElseThrow(() -> new RuntimeException("İlgili maaş bilgisi bulunamadı!"));
+        SalaryMapper.INSTANCE.updateSalaryFromDto(salaryUpdateDto, salary);
+        salary = salaryRepository.save(salary);
+        return getSavedSalaryInfo(salary);
+    }
+
+    @Override
     public DetailOfSalaryArrangementDto showArrangementOfSalary(String citizenId, Month debtMonth, short debtYear) {
         List<MonthlyDebt> monthlyDebtList = debtRepository.findByCitizenIdAndDebtMonthAndDebtYear(citizenId, debtMonth, debtYear);
 

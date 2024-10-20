@@ -22,6 +22,11 @@ public class SalaryController {
         return new ResponseEntity<>(salaryService.saveSalary(salarySaveDto), HttpStatus.OK);
     }
 
+    @PutMapping("/{salaryId}")
+    public ResponseEntity<String> updateSalary(@PathVariable Long salaryId, @RequestBody SalarySaveDto salarySaveDto) {
+        return new ResponseEntity<>(salaryService.updateSalary(salaryId, salarySaveDto), HttpStatus.OK);
+    }
+
     @GetMapping()
     public ResponseEntity<DetailOfSalaryArrangementDto> getArrangementOfSalary(@RequestParam String citizenId, @RequestParam Month debtMonth, @RequestParam short debtYear) {
         return new ResponseEntity<>(salaryService.showArrangementOfSalary(citizenId, debtMonth, debtYear), HttpStatus.OK);
