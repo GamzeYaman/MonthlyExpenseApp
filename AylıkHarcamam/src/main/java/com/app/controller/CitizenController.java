@@ -1,11 +1,11 @@
 package com.app.controller;
 
+import com.app.common.RestResponse;
 import com.app.dto.CitizenDto;
 import com.app.dto.CitizenSaveDto;
 import com.app.dto.CitizenUpdateDto;
 import com.app.service.CitizenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,18 +16,18 @@ public class CitizenController {
 
     private final CitizenService citizenService;
 
-    @PostMapping("/save")
-    public ResponseEntity<String> saveCitizen(@RequestBody CitizenSaveDto citizenSaveDto) {
-        return new ResponseEntity<>(citizenService.saveCitizen(citizenSaveDto), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<RestResponse<String>> saveCitizen(@RequestBody CitizenSaveDto citizenSaveDto) {
+        return ResponseEntity.ok(RestResponse.of(citizenService.saveCitizen(citizenSaveDto)));
     }
 
-    @PutMapping("/{citizenId}")
-    public ResponseEntity<String> updateCitizen(@PathVariable String citizenId,  @RequestBody CitizenUpdateDto citizenUpdateDto) {
-        return new ResponseEntity<>(citizenService.updateCitizen(citizenId, citizenUpdateDto), HttpStatus.OK);
+    @PutMapping("{citizenId}")
+    public ResponseEntity<RestResponse<String>> updateCitizen(@PathVariable String citizenId,  @RequestBody CitizenUpdateDto citizenUpdateDto) {
+        return ResponseEntity.ok(RestResponse.of(citizenService.updateCitizen(citizenId, citizenUpdateDto)));
     }
 
-    @GetMapping("/getCitizen")
-    public ResponseEntity<CitizenDto> getCitizenbyId(@RequestParam String citizenId) {
-        return new ResponseEntity<>(citizenService.getCitizenById(citizenId), HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<RestResponse<CitizenDto>> getCitizenById(@RequestParam String citizenId) {
+        return ResponseEntity.ok(RestResponse.of(citizenService.getCitizenById(citizenId)));
     }
 }

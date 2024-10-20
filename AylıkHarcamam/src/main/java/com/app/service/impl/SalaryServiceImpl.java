@@ -31,7 +31,7 @@ public class SalaryServiceImpl implements SalaryService {
     @Override
     public String saveSalary(SalarySaveDto salarySaveDto) {
         isDtoValuesNull(salarySaveDto);
-        isThereSalaryInMonthAndYear(Month.of(salarySaveDto.getSalaryMonth()), salarySaveDto.getSalaryYear());
+        isThereSalaryInMonthAndYear(Month.of(salarySaveDto.getSalaryMonth()), salarySaveDto.getSalaryYear(), salarySaveDto.getCitizenId());
         Salary salary = SalaryMapper.INSTANCE.convertToSalaryFromSalarySaveDto(salarySaveDto);
         salary = salaryRepository.save(salary);
         return getSavedSalaryInfo(salary);
@@ -40,7 +40,7 @@ public class SalaryServiceImpl implements SalaryService {
     @Override
     public String updateSalary(Long salaryId, SalarySaveDto salaryUpdateDto) {
         isDtoValuesNull(salaryUpdateDto);
-        isThereSalaryInMonthAndYear(Month.of(salaryUpdateDto.getSalaryMonth()), salaryUpdateDto.getSalaryYear());
+        isThereSalaryInMonthAndYear(Month.of(salaryUpdateDto.getSalaryMonth()), salaryUpdateDto.getSalaryYear(), salaryUpdateDto.getCitizenId());
         Salary salary = salaryRepository.findById(salaryId).orElseThrow(() -> new RuntimeException("İlgili maaş bilgisi bulunamadı!"));
         SalaryMapper.INSTANCE.updateSalaryFromDto(salaryUpdateDto, salary);
         salary = salaryRepository.save(salary);
@@ -91,8 +91,8 @@ public class SalaryServiceImpl implements SalaryService {
         }
     }
 
-    private void isThereSalaryInMonthAndYear(Month salaryMonth, int salaryYear) {
-        if(salaryRepository.existsBySalaryMonthAndSalaryYear(salaryMonth, salaryYear)) {
+    private void isThereSalaryInMonthAndYear(Month salaryMonth, int salaryYear, String citizenId) {
+        if(salaryRepository.existsBySalaryMonthAndSalaryYearAndCitizen_Id(salaryMonth, salaryYear, citizenId)) {
             throw new RuntimeException(salaryMonth.getDisplayName(TextStyle.FULL, new Locale("tr", "TR"))
             + "-" + salaryYear + " ayına ait bir maaş bilgisi bulunmaktadır.");
         }

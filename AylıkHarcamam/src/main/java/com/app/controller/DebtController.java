@@ -1,9 +1,9 @@
 package com.app.controller;
 
+import com.app.common.RestResponse;
 import com.app.dto.DebtDto;
 import com.app.service.DebtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +16,13 @@ public class DebtController {
 
     private final DebtService debtService;
 
-    @GetMapping("/listDebts")
-    public ResponseEntity<List<DebtDto>> getDebtListByCitizenId(@RequestParam String citizenId){
-        return new ResponseEntity<>(debtService.listDebtsByCitizenId(citizenId), HttpStatus.OK);
+    @GetMapping("/")
+    public ResponseEntity<RestResponse<List<DebtDto>>> getDebtListByCitizenId(@RequestParam String citizenId){
+        return ResponseEntity.ok(RestResponse.of(debtService.listDebtsByCitizenId(citizenId)));
     }
 
-    @GetMapping("/listDebts/{debtTypeValue}")
-    public ResponseEntity<List<DebtDto>> getDebtListByDebtType(@PathVariable int debtTypeValue){
-        return new ResponseEntity<>(debtService.listDebtsByDebtType(debtTypeValue), HttpStatus.OK);
+    @GetMapping("/{debtTypeValue}")
+    public ResponseEntity<RestResponse<List<DebtDto>>> getDebtListByDebtType(@PathVariable int debtTypeValue){
+        return ResponseEntity.ok(RestResponse.of(debtService.listDebtsByDebtType(debtTypeValue)));
     }
 }

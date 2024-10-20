@@ -7,7 +7,7 @@ import java.time.Month;
 
 public interface SalaryRepository extends JpaRepository<Salary, Long> {
 
-    boolean existsBySalaryMonthAndSalaryYear(Month salaryMonth, int salaryYear);
+    boolean existsBySalaryMonthAndSalaryYearAndCitizen_Id(Month salaryMonth, int salaryYear, String citizenId);
 
     Salary findByCitizenId(String citizenId);
 }
