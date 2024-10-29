@@ -1,5 +1,9 @@
 package com.app.service.impl;
 
+import com.app.common.exception.exceptionmessage.GeneralExceptionMessages;
+import com.app.common.exception.exceptions.AlreadyHaveException;
+import com.app.common.exception.exceptions.InvalidDataException;
+import com.app.common.exception.exceptions.ItemNotFoundException;
 import com.app.common.validation.ValidationUtils;
 import com.app.converter.CitizenMapper;
 import com.app.dto.CitizenDto;
@@ -30,7 +34,7 @@ public class CitizenServiceImpl implements CitizenService {
     public String updateCitizen(String citizenId, CitizenUpdateDto citizenUpdateDto) {
         validationOfValues(citizenUpdateDto.getCitizenName(), citizenUpdateDto.getCitizenSurname(), citizenUpdateDto.getUsername());
         isUsernameUsed(citizenUpdateDto.getUsername());
-        Citizen citizen = citizenRepository.findById(citizenId).orElseThrow(() -> { return new RuntimeException("İgili kişi bulunamadı!");});
+        Citizen citizen = citizenRepository.findById(citizenId).orElseThrow(() -> new ItemNotFoundException(GeneralExceptionMessages.USER_NOT_FOUND.getMessage()));
         CitizenMapper.INSTANCE.updateCitizenFromDto(citizenUpdateDto, citizen);
         citizenRepository.save(citizen);
         return "Kişi başarıyla güncellenmiştir. Ad Soyad / Kullanıcı Adı : " + getSavedCitizenInfo(citizen);
@@ -47,24 +51,24 @@ public class CitizenServiceImpl implements CitizenService {
     private void isUsernameUsed(String username) {
         Citizen citizen = citizenRepository.findByUsername(username);
         if(citizen != null) {
-            throw new RuntimeException(username + " kullanıcı adı ile bir kullanıcı mevcuttur!");
+            throw new AlreadyHaveException(username + GeneralExceptionMessages.USERNAME_ALREADY_USED.getMessage());
         }
     }
 
     private void isDtoValuesNull(CitizenSaveDto citizenSaveDto) {
         validationOfValues(citizenSaveDto.getCitizenName(), citizenSaveDto.getCitizenSurname(), citizenSaveDto.getUsername());
          if(ValidationUtils.isValueNull(citizenSaveDto.getPassword())) {
-            throw new RuntimeException("Şifre boş olamaz!");
+            throw new InvalidDataException("Şifre " + GeneralExceptionMessages.EMPTY_DATA.getMessage());
         }
     }
 
     private void validationOfValues(String citizenName, String citizenSurname, String username) {
         if(ValidationUtils.isValueNull(citizenName)) {
-            throw new RuntimeException("Kişi adı boş olamaz!");
+            throw new InvalidDataException("Kişi adı " + GeneralExceptionMessages.EMPTY_DATA.getMessage());
         } else if(ValidationUtils.isValueNull(citizenSurname)) {
-            throw new RuntimeException("Kişi soyadı boş olamaz");
+            throw new InvalidDataException("Kişi soyadı " + GeneralExceptionMessages.EMPTY_DATA.getMessage());
         } else if(ValidationUtils.isValueNull(username)) {
-            throw new RuntimeException("Kişi kullanıcı adı boş olamaz!");
+            throw new InvalidDataException("Kişi kullanıcı adı " + GeneralExceptionMessages.EMPTY_DATA.getMessage());
         }
     }
 

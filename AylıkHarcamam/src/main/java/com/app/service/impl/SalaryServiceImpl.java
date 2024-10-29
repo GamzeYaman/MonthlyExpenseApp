@@ -1,6 +1,10 @@
 package com.app.service.impl;
 
 import com.app.common.Parameter;
+import com.app.common.exception.exceptionmessage.GeneralExceptionMessages;
+import com.app.common.exception.exceptions.AlreadyHaveException;
+import com.app.common.exception.exceptions.InvalidDataException;
+import com.app.common.exception.exceptions.ItemNotFoundException;
 import com.app.common.validation.ValidationUtils;
 import com.app.converter.SalaryMapper;
 import com.app.dto.DetailOfSalaryArrangementDto;
@@ -41,7 +45,7 @@ public class SalaryServiceImpl implements SalaryService {
     public String updateSalary(Long salaryId, SalarySaveDto salaryUpdateDto) {
         isDtoValuesNull(salaryUpdateDto);
         isThereSalaryInMonthAndYear(Month.of(salaryUpdateDto.getSalaryMonth()), salaryUpdateDto.getSalaryYear(), salaryUpdateDto.getCitizenId());
-        Salary salary = salaryRepository.findById(salaryId).orElseThrow(() -> new RuntimeException("İlgili maaş bilgisi bulunamadı!"));
+        Salary salary = salaryRepository.findById(salaryId).orElseThrow(() -> new ItemNotFoundException(GeneralExceptionMessages.SALARY_NOT_FOUND.getMessage()));
         SalaryMapper.INSTANCE.updateSalaryFromDto(salaryUpdateDto, salary);
         salary = salaryRepository.save(salary);
         return getSavedSalaryInfo(salary);
@@ -83,18 +87,18 @@ public class SalaryServiceImpl implements SalaryService {
 
     private void isDtoValuesNull(SalarySaveDto salarySaveDto){
         if(ValidationUtils.isValueNull(salarySaveDto.getSalaryAmount())) {
-            throw new RuntimeException("Maaş miktarı bilgisi boş olamaz!");
+            throw new InvalidDataException("Maaş miktarı bilgisi " + GeneralExceptionMessages.EMPTY_DATA.getMessage());
         } else if(ValidationUtils.isValueNull(salarySaveDto.getSalaryYear()) || salarySaveDto.getSalaryYear() == 0) {
-            throw new RuntimeException("Maaş yılı bilgisi boş olamaz!");
+            throw new InvalidDataException("Maaş yılı bilgisi " + GeneralExceptionMessages.EMPTY_DATA.getMessage());
         } else if(ValidationUtils.isValueNull(salarySaveDto.getSalaryMonth()) || salarySaveDto.getSalaryMonth() == 0) {
-            throw new RuntimeException("Maaş ayı bilgisi boş olamaz!");
+            throw new InvalidDataException("Maaş ayı bilgisi " + GeneralExceptionMessages.EMPTY_DATA.getMessage());
         }
     }
 
     private void isThereSalaryInMonthAndYear(Month salaryMonth, int salaryYear, String citizenId) {
         if(salaryRepository.existsBySalaryMonthAndSalaryYearAndCitizen_Id(salaryMonth, salaryYear, citizenId)) {
-            throw new RuntimeException(salaryMonth.getDisplayName(TextStyle.FULL, new Locale("tr", "TR"))
-            + "-" + salaryYear + " ayına ait bir maaş bilgisi bulunmaktadır.");
+            throw new AlreadyHaveException(salaryMonth.getDisplayName(TextStyle.FULL, new Locale("tr", "TR"))
+            + "-" + salaryYear + GeneralExceptionMessages.SALARY_ALREADY_USED.getMessage());
         }
     }
 }
