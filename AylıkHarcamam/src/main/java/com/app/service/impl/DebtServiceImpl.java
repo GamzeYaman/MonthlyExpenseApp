@@ -3,6 +3,7 @@ package com.app.service.impl;
 import com.app.common.enums.DebtType;
 import com.app.converter.DebtMapper;
 import com.app.dto.DebtDto;
+import com.app.dto.DebtSearchDto;
 import com.app.repository.DebtRepository;
 import com.app.service.DebtService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,8 @@ public class DebtServiceImpl implements DebtService {
     }
 
     @Override
-    public List<DebtDto> listDebtsByDebtType(int debtTypeValue) {
-        return debtRepository.findByDebtType(DebtType.getDebtTypeByValue(debtTypeValue)).stream()
+    public List<DebtDto> listDebtsByCriterias(DebtSearchDto debtSearchDto) {
+        return debtRepository.searchDebtByCriterias(debtSearchDto).stream()
                 .map(DebtMapper.INSTANCE::debtDtoFromDebt)
                 .toList();
     }

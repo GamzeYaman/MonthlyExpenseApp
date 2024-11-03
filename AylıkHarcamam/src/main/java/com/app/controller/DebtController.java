@@ -2,6 +2,7 @@ package com.app.controller;
 
 import com.app.common.RestResponse;
 import com.app.dto.DebtDto;
+import com.app.dto.DebtSearchDto;
 import com.app.service.DebtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,8 @@ public class DebtController {
         return ResponseEntity.ok(RestResponse.of(debtService.listDebtsByCitizenId(citizenId)));
     }
 
-    @GetMapping("/{debtTypeValue}")
-    public ResponseEntity<RestResponse<List<DebtDto>>> getDebtListByDebtType(@PathVariable int debtTypeValue){
-        return ResponseEntity.ok(RestResponse.of(debtService.listDebtsByDebtType(debtTypeValue)));
+    @PostMapping("/")
+    public ResponseEntity<RestResponse<List<DebtDto>>> getDebtListByDebtType(@RequestBody DebtSearchDto debtSearchDto){
+        return ResponseEntity.ok(RestResponse.of(debtService.listDebtsByCriterias(debtSearchDto)));
     }
 }

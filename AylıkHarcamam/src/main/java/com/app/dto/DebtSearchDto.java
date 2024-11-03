@@ -13,16 +13,7 @@ import java.time.Month;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DebtSearchDto {
-    private int debtTypeValue;
-    private int debtMonthValue;
-    private short debtYear;
-
-    public DebtType getDebtType() {
-        return DebtType.getDebtTypeByValue(debtTypeValue);
-    }
-
-    public Month getDebtMonth() {
-        return Month.of(debtMonthValue);
-    }
-
+    private Short debtYear;
+    private Month debtMonth;
+    private DebtType debtType;
 }
