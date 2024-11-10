@@ -12,7 +12,7 @@ import java.time.Month;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DebtSearchDto {
+public class DebtSearchDto extends SearchFormDto{
     private Short debtYear;
     private Month debtMonth;
     private DebtType debtType;

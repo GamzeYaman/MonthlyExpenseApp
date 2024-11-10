@@ -4,9 +4,13 @@ import com.app.common.enums.DebtType;
 import com.app.converter.DebtMapper;
 import com.app.dto.DebtDto;
 import com.app.dto.DebtSearchDto;
+import com.app.entity.Debt;
 import com.app.repository.DebtRepository;
 import com.app.service.DebtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +30,8 @@ public class DebtServiceImpl implements DebtService {
 
     @Override
     public List<DebtDto> listDebtsByCriterias(DebtSearchDto debtSearchDto) {
-        return debtRepository.searchDebtByCriterias(debtSearchDto).stream()
+        Pageable pageable = PageRequest.of(debtSearchDto.getPageNumber(), debtSearchDto.getPageSize());
+        return debtRepository.searchDebtByCriterias(debtSearchDto, pageable).stream()
                 .map(DebtMapper.INSTANCE::debtDtoFromDebt)
                 .toList();
     }
