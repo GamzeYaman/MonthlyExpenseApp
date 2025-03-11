@@ -3,6 +3,7 @@ package com.app.controller;
 import com.app.common.RestResponse;
 import com.app.dto.DebtDto;
 import com.app.dto.DebtSearchDto;
+import com.app.dto.FileNameRequest;
 import com.app.service.DebtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,4 +27,10 @@ public class DebtController {
     public ResponseEntity<RestResponse<List<DebtDto>>> getDebtListByDebtType(@RequestBody DebtSearchDto debtSearchDto){
         return ResponseEntity.ok(RestResponse.of(debtService.listDebtsByCriterias(debtSearchDto)));
     }
+
+    @PostMapping("/file")
+    public ResponseEntity<RestResponse<String>> createDebtFile(@RequestBody FileNameRequest request) {
+        return ResponseEntity.ok(RestResponse.of(debtService.createDebtFile(request)));
+    }
+
 }
