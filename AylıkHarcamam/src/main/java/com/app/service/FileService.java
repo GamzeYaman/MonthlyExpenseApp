@@ -1,29 +1,40 @@
 package com.app.service;
 
 import com.app.common.Parameter;
-import com.sun.jdi.event.ExceptionEvent;
+import com.app.common.client.MailClientApi;
+import com.app.common.utils.DebtUtils;
+import com.app.common.utils.FileUtils;
+import com.app.dto.MonthlyDebt;
+import com.app.entity.Salary;
+import com.app.repository.DebtRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class FileService {
+
+    private final DebtRepository debtRepository;
+    private final MailClientApi mailClientApi;
+
 
     public File createFile(String fileName) {
         try {
             StringBuilder sbFileName = new StringBuilder(fileName);
-            sbFileName.append(".pdf");
+            sbFileName.append(".txt");
 
             String directory = Parameter.DEBT_FILE_DIRECTORY;
             Path directoryPath = Paths.get(directory);
@@ -45,54 +56,31 @@ public class FileService {
         }
     }
 
-    public void sendRequestToDownloadFileProcess(String fileName) {
-        WebClient webClient = WebClient.builder()
-                .baseUrl("http://localhost:8080")
-                .build();
 
-        try {
-           /* webClient.get()
-                    .uri("http://localhost:8080/v1/file/deneme")
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();*/
+    public void writeFile(File file, String citizenId, Salary salary) throws IOException { //TODO exception sonrasında düzeltilecek
+        try(BufferedWriter bufferedWriter = FileUtils.generateWriter(file)) {
+            List<MonthlyDebt> monthlyDebtList = debtRepository.findByCitizenIdAndDebtMonthAndDebtYear(citizenId, salary.getSalaryMonth(), (short) salary.getSalaryYear());
+            HashMap<String, BigDecimal> monthlyDebtHashMap = DebtUtils.getDebtNameAndAmountList(monthlyDebtList);
 
-            webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .scheme("http")
-                            .host("localhost")
-                            .port(8080)
-                            .path("/v1/file/download")
-                            .queryParam("fileName", URLEncoder.encode(fileName, StandardCharsets.UTF_8))
-                            .build())
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+            FileUtils.writeLine(bufferedWriter, FileUtils.writeExtraLine("Total Maaş", salary.getSalaryAmount()));
+            writeDebtLine(bufferedWriter, monthlyDebtHashMap);
+            FileUtils.writeLine(bufferedWriter, FileUtils.writeExtraLine("Geriye Kalan Görevsiz Para", getRemainingMoney(salary, monthlyDebtList)));
 
-            /*webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/v1/file/download/{fileName}")
-                            .build(fileName))
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();*/
         } catch (Exception e) {
-            //TODO exception özelleştirilmeli
-            e.printStackTrace();
+
         }
-
-        //TODO localhostu düzenle
-
     }
 
-    public FileSystemResource downloadDebtFile(String fileName) {
-        File file = new File(Parameter.DEBT_FILE_DIRECTORY, fileName);
-
-        return file.exists() ? new FileSystemResource(file) : null;
+    public void sendFileByMail() { //TODO burası geliştirilecek
+        log.info("Mail gönderilme işlemi yapılıyor.");
+        mailClientApi.sendBatchMail();
     }
 
+    private void writeDebtLine(BufferedWriter bufferedWriter, HashMap<String, BigDecimal> monthlyDebtHashMap) {
+        monthlyDebtHashMap.forEach((debtType, debtAmount) -> FileUtils.writeLine(bufferedWriter, FileUtils.createDebtLine(debtType, debtAmount)));
+    }
 
-    //todo file indirme
-
-    //TODO file yazma
+    private BigDecimal getRemainingMoney(Salary salary, List<MonthlyDebt> monthlyDebtList) {
+        return DebtUtils.calculateRemainingMoneyInSalary(salary, DebtUtils.calculateTotalDebtAmount(monthlyDebtList));
+    }
 }

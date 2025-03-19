@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/file")
 public class FileController {
 
-    private final FileService fileService;
+    /*private final FileService fileService;
 
     @GetMapping("/download")
     public ResponseEntity<FileSystemResource> downloadFile(@RequestParam String fileName) {
@@ -39,7 +39,7 @@ public class FileController {
     public ResponseEntity<FileSystemResource> deneme() {
         System.out.println("Geldim burayaaaa...");
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-    }
+    }*/
 }
 
 

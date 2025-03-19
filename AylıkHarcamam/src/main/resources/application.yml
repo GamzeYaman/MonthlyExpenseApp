@@ -12,3 +12,9 @@ spring:
     logging:
         level:
             root: ERROR
+    cloud:
+            compatibility-verifier:
+                enabled: false
+
+mail:
+    url: http://localhost:8082/v1/mail

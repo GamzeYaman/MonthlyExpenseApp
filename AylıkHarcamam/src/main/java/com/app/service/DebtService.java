@@ -5,6 +5,7 @@ import com.app.dto.DebtSearchDto;
 import com.app.dto.FileNameRequest;
 import org.springframework.core.io.FileSystemResource;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface DebtService {
@@ -13,7 +14,7 @@ public interface DebtService {
 
     List<DebtDto> listDebtsByCriterias(DebtSearchDto debtSearchDto);
 
-    String createDebtFile(FileNameRequest request);
+    String createDebtFile(FileNameRequest request) throws IOException;
 
 }
 

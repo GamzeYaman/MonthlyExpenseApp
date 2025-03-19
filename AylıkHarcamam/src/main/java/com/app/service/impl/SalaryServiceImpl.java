@@ -5,6 +5,7 @@ import com.app.common.exception.exceptionmessage.GeneralExceptionMessages;
 import com.app.common.exception.exceptions.AlreadyHaveException;
 import com.app.common.exception.exceptions.InvalidDataException;
 import com.app.common.exception.exceptions.ItemNotFoundException;
+import com.app.common.utils.DebtUtils;
 import com.app.common.validation.ValidationUtils;
 import com.app.converter.SalaryMapper;
 import com.app.dto.DetailOfSalaryArrangementDto;
@@ -13,6 +14,7 @@ import com.app.dto.SalarySaveDto;
 import com.app.entity.Salary;
 import com.app.repository.DebtRepository;
 import com.app.repository.SalaryRepository;
+import com.app.service.DebtService;
 import com.app.service.SalaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,32 +59,17 @@ public class SalaryServiceImpl implements SalaryService {
 
         Salary salary = salaryRepository.findByCitizenId(citizenId);
 
-        BigDecimal totalDebtAmount = calculateTotalDebtAmount(monthlyDebtList);
+        BigDecimal totalDebtAmount = DebtUtils.calculateTotalDebtAmount(monthlyDebtList);
 
-        BigDecimal remainingSalary = calculateRemainingMoneyInSalary(salary, totalDebtAmount);
+        BigDecimal remainingSalary = DebtUtils.calculateRemainingMoneyInSalary(salary, totalDebtAmount);
 
-        return SalaryMapper.INSTANCE.convertToDetailOfSalaryArrangementDto(salary, totalDebtAmount, remainingSalary, getDebtNameAndAmountList(monthlyDebtList));
+        return SalaryMapper.INSTANCE.convertToDetailOfSalaryArrangementDto(salary, totalDebtAmount, remainingSalary, DebtUtils.getDebtNameAndAmountList(monthlyDebtList));
     }
 
     private String getSavedSalaryInfo(Salary salary) {
         return Parameter.CURRENCY_FORMATTER.format(salary.getSalaryAmount()) + "/"
                 + salary.getSalaryYear() + "-"
                 + salary.getSalaryMonth().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("tr"));
-    }
-
-    private BigDecimal calculateTotalDebtAmount(List<MonthlyDebt> monthlyDebtList) {
-        return BigDecimal.valueOf(monthlyDebtList.stream().mapToDouble(debt -> debt.debtAmount().doubleValue()).sum());
-    }
-
-    private BigDecimal calculateRemainingMoneyInSalary(Salary salary, BigDecimal totalDebtAmount) {
-        return salary.getSalaryAmount().subtract(totalDebtAmount);
-    }
-
-    private HashMap<String, BigDecimal> getDebtNameAndAmountList(List<MonthlyDebt> monthlyDebtList) {
-        HashMap<String, BigDecimal> debtNameAndAmountList = (HashMap<String, BigDecimal>) monthlyDebtList.stream()
-                .collect(Collectors.toMap(monthlyDebt -> monthlyDebt.debtType().getText(), MonthlyDebt::debtAmount));
-
-        return debtNameAndAmountList;
     }
 
     private void isDtoValuesNull(SalarySaveDto salarySaveDto){
@@ -98,7 +85,7 @@ public class SalaryServiceImpl implements SalaryService {
     private void isThereSalaryInMonthAndYear(Month salaryMonth, int salaryYear, String citizenId) {
         if(salaryRepository.existsBySalaryMonthAndSalaryYearAndCitizen_Id(salaryMonth, salaryYear, citizenId)) {
             throw new AlreadyHaveException(salaryMonth.getDisplayName(TextStyle.FULL, new Locale("tr", "TR"))
-            + "-" + salaryYear + GeneralExceptionMessages.SALARY_ALREADY_USED.getMessage());
+                    + "-" + salaryYear + GeneralExceptionMessages.SALARY_ALREADY_USED.getMessage());
         }
     }
 }

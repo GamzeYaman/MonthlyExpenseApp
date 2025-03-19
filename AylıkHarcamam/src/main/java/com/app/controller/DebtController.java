@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class DebtController {
     }
 
     @PostMapping("/file")
-    public ResponseEntity<RestResponse<String>> createDebtFile(@RequestBody FileNameRequest request) {
+    public ResponseEntity<RestResponse<String>> createDebtFile(@RequestBody FileNameRequest request) throws IOException {
         return ResponseEntity.ok(RestResponse.of(debtService.createDebtFile(request)));
     }
 
