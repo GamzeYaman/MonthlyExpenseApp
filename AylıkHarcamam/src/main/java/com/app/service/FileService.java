@@ -7,13 +7,13 @@ import com.app.common.utils.FileUtils;
 import com.app.dto.MonthlyDebt;
 import com.app.entity.Salary;
 import com.app.repository.DebtRepository;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -71,6 +71,26 @@ public class FileService {
         }
     }
 
+    public File convertToPdf(File txtFile){ //TODO exception düzeltilecek
+        String pdfFilePath = getPdfFilePath(txtFile.getName());
+        try (Document document = FileUtils.generateDocument(pdfFilePath);
+             BufferedReader bufferedReader = FileUtils.generateReader(txtFile);){
+
+            document.setFont(FileUtils.getPdfFont());
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                document.add(new Paragraph(line));
+            }
+            return new File(pdfFilePath);
+
+        } catch (IOException e) {
+            log.error("Pdf oluşturulamadı");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public void sendFileByMail() { //TODO burası geliştirilecek
         log.info("Mail gönderilme işlemi yapılıyor.");
         mailClientApi.sendBatchMail();
@@ -82,5 +102,10 @@ public class FileService {
 
     private BigDecimal getRemainingMoney(Salary salary, List<MonthlyDebt> monthlyDebtList) {
         return DebtUtils.calculateRemainingMoneyInSalary(salary, DebtUtils.calculateTotalDebtAmount(monthlyDebtList));
+    }
+
+    private String getPdfFilePath(String txtFileName) {
+        String pdfFileName = txtFileName.replaceFirst("\\.txt$", ".pdf");
+        return  Parameter.DEBT_FILE_DIRECTORY + "/" + pdfFileName;
     }
 }
