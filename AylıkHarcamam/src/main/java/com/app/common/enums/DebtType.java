@@ -14,7 +14,9 @@ public enum DebtType {
     KIRA("Kira", 6),
     MUTFAK_HARCAMASI("Mutfak Harcaması", 7),
     UYELIK_HARCAMASI("Üyelik Harcaması (Spotify/Netflix/Disney+)", 8),
-    OZEL_HARCAMA("Özel Harcama", 9);
+    OZEL_HARCAMA("Özel Harcama", 9),
+    INTERNET_FATURASI("Internet Faturası", 10)
+    ;
 
     @Getter
     private String text;

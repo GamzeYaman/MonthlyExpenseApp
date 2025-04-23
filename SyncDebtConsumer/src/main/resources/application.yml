@@ -1,0 +1,11 @@
+spring:
+    application:
+        name: SyncDebtConsumer
+    datasource:
+        password: bangtan
+        url: jdbc:postgresql://localhost:5432/SyncData
+        username: postgres
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
