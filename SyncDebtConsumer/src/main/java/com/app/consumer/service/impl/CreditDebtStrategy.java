@@ -9,11 +9,12 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-@Component("PhoneBill")
-public class PhoneBillStrategy implements DebtQueryStrategy {
+@Component("CreditDebt")
+public class CreditDebtStrategy implements DebtQueryStrategy {
+
     @Override
     public String getDebtResult(Long citizenNo) throws JsonProcessingException {
-        BigDecimal billAmount = DebtUtils.getRandomAmountForPhoneBills(); //This is like that you call web service and get response...
-        return DebtUtils.getObjMapInstance().writeValueAsString(new WebServiceResponse(billAmount, DebtType.TELEFON_FATURASI.getVal()));
+        BigDecimal creditDebtAmount = DebtUtils.getRandomDebtAmountForCredit();
+        return DebtUtils.getObjMapInstance().writeValueAsString(new WebServiceResponse(creditDebtAmount, DebtType.KREDI_BORCU.getVal()));
     }
 }

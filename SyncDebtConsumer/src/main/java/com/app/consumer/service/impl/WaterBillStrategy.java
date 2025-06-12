@@ -5,11 +5,10 @@ import com.app.consumer.common.dto.WebServiceResponse;
 import com.app.consumer.common.enums.DebtType;
 import com.app.consumer.service.DebtQueryStrategy;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.stereotype.Service;
-
+import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
-@Service
+@Component("WaterBill")
 public class WaterBillStrategy implements DebtQueryStrategy {
     @Override
     public String getDebtResult(Long citizenNo) throws JsonProcessingException {
